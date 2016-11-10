@@ -17,7 +17,7 @@ class SecretListAPIView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        return super().perform_create(serializer)
+        return super(self.__class__.__name__, self).perform_create(serializer)
 
     def get_queryset(self):
         return Secret.objects.filter(user=self.request.user)
