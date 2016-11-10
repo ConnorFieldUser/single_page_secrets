@@ -6,7 +6,7 @@ var User = Backbone.Model.extend({
     var self = this;
     $.ajaxSetup({
       beforeSend: function(xhr){
-        xhr.setRequestHeader("???Token????", self.get('token'));
+        xhr.setRequestHeader("Authorization", 'Token ' + self.get('token'));
       }
     });
   }

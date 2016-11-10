@@ -1,6 +1,7 @@
 var React = require('react');
 
 var User = require('../models/user').User;
+var SecretCollection = require('../models/secret').SecretCollection;
 
 
 var LoginForm = React.createClass({
@@ -38,6 +39,50 @@ var LoginForm = React.createClass({
   }
 });
 
+var SecretList = React.createClass({
+  render: function(){
+    var secretHtml = this.props.secretCollection.map(function(secret){
+      return <li key={secret.cid} className="list-group-item">{secret.get('body')}</li>
+    });
+
+    return (
+      <ul className="list-group">
+        {secretHtml}
+      </ul>
+    )
+  }
+});
+
+var AddForm = React.createClass({
+  getInitialState: function(){
+    return {
+      secret: ''
+    };
+  },
+  handleSecretChange: function(e){
+    this.setState({secret: e.target.value});
+  },
+  handleSubmit: function(e){
+    e.preventDefault();
+
+    this.props.addSecret(this.state);
+
+    this.setState({secret: ''});
+  },
+  render: function(){
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="secret">Secret</label>
+          <input onChange={this.handleSecretChange} value={this.state.secret} type="text" className="form-control" id="secret" placeholder="Shhhhhh" />
+        </div>
+
+        <button type="submit" className="btn btn-default">Login</button>
+      </form>
+    );
+  }
+});
+
 var IndexContainer = React.createClass({
   getInitialState: function(){
     var user = new User();
@@ -50,14 +95,27 @@ var IndexContainer = React.createClass({
     }
 
     return {
-      user: user
+      user: user,
+      secretCollection: new SecretCollection()
     };
+  },
+  componentWillMount: function(){
+    this.state.secretCollection.fetch().then(() => {
+      this.setState({secretCollection: this.state.secretCollection});
+    });
   },
   loginUser: function(userData){
     var self = this;
     User.login(userData.username, userData.password, function(user){
       self.setState({user: user});
     });
+  },
+  addSecret: function(secretData){
+    var secretCollection = this.state.secretCollection;
+
+    secretCollection.create({body: secretData.secret});
+
+    this.setState({secretCollection: secretCollection});
   },
   render: function(){
     return (
@@ -72,17 +130,13 @@ var IndexContainer = React.createClass({
 
         <div className="row">
           <div className="col-md-4">
-            <AddForm />
+            <AddForm addSecret={this.addSecret}/>
           </div>
 
           <div className="col-md-8">
-            <ul className="list-group">
-              <li className="list-group-item">Cras justo odio</li>
-            </ul>
+            <SecretList secretCollection={this.state.secretCollection}/>
           </div>
         </div>
-
-
       </div>
     );
   }
