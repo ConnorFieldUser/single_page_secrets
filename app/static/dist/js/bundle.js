@@ -63,10 +63,26 @@ var IndexContainer = React.createClass({displayName: "IndexContainer",
   },
   render: function(){
     return (
-      React.createElement("div", null, 
-        React.createElement("h1", null, "Secrets App ", this.state.user.get('token') ? 'Logged In' : ''), 
+      React.createElement("div", {className: "container"}, 
+        React.createElement("div", {className: "row"}, 
+          React.createElement("div", {className: "col-md-12"}, 
+            React.createElement("h1", null, "Secrets App ", this.state.user.get('token') ? 'Logged In' : ''), 
 
-        React.createElement(LoginForm, {loginUser: this.loginUser})
+            React.createElement(LoginForm, {loginUser: this.loginUser})
+          )
+        ), 
+
+        React.createElement("div", {className: "row"}, 
+          React.createElement("div", {className: "col-md-4"}, 
+            React.createElement(AddForm, null)
+          ), 
+
+          React.createElement("div", {className: "col-md-8"}, 
+            React.createElement("ul", {className: "list-group"}, 
+              React.createElement("li", {className: "list-group-item"}, "Cras justo odio")
+            )
+          )
+        )
 
 
       )
@@ -97,7 +113,14 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 var User = Backbone.Model.extend({
-
+  auth: function(){
+    var self = this;
+    $.ajaxSetup({
+      beforeSend: function(xhr){
+        xhr.setRequestHeader("???Token????", self.get('token'));
+      }
+    });
+  }
 },{
   login: function(username, password, callback){
     var loginUrl = 'obtain_token/';
@@ -105,6 +128,7 @@ var User = Backbone.Model.extend({
 
       var user = new User();
       user.set('token', result.token);
+      user.auth();
 
       localStorage.setItem('user', JSON.stringify(user.toJSON()));
 

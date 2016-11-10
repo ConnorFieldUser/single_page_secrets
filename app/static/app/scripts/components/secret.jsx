@@ -61,10 +61,26 @@ var IndexContainer = React.createClass({
   },
   render: function(){
     return (
-      <div>
-        <h1>Secrets App {this.state.user.get('token') ? 'Logged In' : ''}</h1>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Secrets App {this.state.user.get('token') ? 'Logged In' : ''}</h1>
 
-        <LoginForm loginUser={this.loginUser}/>
+            <LoginForm loginUser={this.loginUser}/>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-md-4">
+            <AddForm />
+          </div>
+
+          <div className="col-md-8">
+            <ul className="list-group">
+              <li className="list-group-item">Cras justo odio</li>
+            </ul>
+          </div>
+        </div>
 
 
       </div>
